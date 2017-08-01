@@ -209,6 +209,14 @@ class SudokuPuzzle(Puzzle):
     # ------------------------------------------------------------------------
     # Helpers for method 'extensions'
     # ------------------------------------------------------------------------
+    def sq_helper(self, index):
+        m = int(sqrt(self._n))
+        x = 0
+        for i in range(1, m+1):
+            if m*(i-1) <= index < m*i:
+                x = m*(i-1)
+        return x
+      
     def _possible_letters(self, row_index, col_index):
         """Return a list of the possible letters for a cell.
 
@@ -221,7 +229,33 @@ class SudokuPuzzle(Puzzle):
         @rtype: list[str]
         """
         # TODO: Change this method to only return valid moves.
-        return list(CHARS[:self._n])
+        #return list(CHARS[:self._n])
+                row_letters = []
+        column_letters = []
+        block_letters = []
+
+        r = self._grid[row_index]
+        if sorted(r) != list(CHARS[:self._n]):
+            for i in r:
+                row_letters.append(i)
+
+        if sorted([row[col_index] for row in self._grid]) != list(CHARS[:self._n]):
+            column_letters = [row[col_index] for row in self._grid]
+
+        m = int(sqrt(self._n))
+        x = self.sq_helper(row_index)
+        y = self.sq_helper(col_index)
+        items = [self._grid[x + i][y + j] for i in range(m) for j in range(m)]
+        if sorted(items) != list(CHARS[:self._n]):
+            for i in items:
+                block_letters.append(i)
+
+        possible_letters = []
+        for i in CHARS[:self._n]:
+            if i not in row_letters and i not in column_letters \
+                    and i not in block_letters:
+                possible_letters.append(i)
+        return possible_letters
 
     def _extend(self, letter, row_index, col_index):
         """Return a new Sudoku puzzle obtained after one move.
