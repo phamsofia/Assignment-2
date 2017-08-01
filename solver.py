@@ -27,7 +27,24 @@ def solve(puzzle, verbose=False):
     @type verbose: bool
     @rtype: Puzzle | None
     """
-    pass
+    all_states = []
+    next_states = puzzle.extensions()
+    final = None
+    for state in next_states:
+        if final: return final
+        all_states.append(state)
+        if state.is_solved():
+            if verbose:
+                final = all_states
+                return final
+            final = all_states[-1]
+            return final
+        else:
+            final = solve(state, verbose)
+    if verbose:
+        for i in all_states:
+            print(i)
+    return final
 
 
 def solve_complete(puzzle, verbose=False):
